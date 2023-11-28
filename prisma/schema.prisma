@@ -10,7 +10,7 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Entry {
+model Iphone {
   id      String @id @default(uuid())
   ////
   name    String

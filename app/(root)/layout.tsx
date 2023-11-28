@@ -7,7 +7,7 @@ import CardShow from "@/components/cardShow";
 import DataTable from "@/components/table";
 
 const Dashboard = async () => {
-  const entries = await prismadb.entry.findMany({
+  const entries = await prismadb.iphone.findMany({
     orderBy: [
       {
         createdAt: "desc",
