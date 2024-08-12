@@ -71,8 +71,10 @@ export const columns: ColumnDef<EntryColumn>[] = [
             <Image
               alt={row.getValue("name")}
               width={100}
+              placeholder="blur"
               height={100}
               src={row.getValue("reciept")}
+              className="max-h-20 w-auto m-auto"
             />
           </a>
         </div>
