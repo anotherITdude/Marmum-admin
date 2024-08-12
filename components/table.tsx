@@ -60,7 +60,7 @@ const Table: React.FC<TableProps> = ({ data }) => {
     // Generate a buffer with the Excel file
     workbook.xlsx.writeBuffer().then((buffer) => {
       // Save the buffer as a file using file-saver
-      saveAs(new Blob([buffer]), `AlAin_BTS_export.xlsx`);
+      saveAs(new Blob([buffer]), `Marmum_BTS_export.xlsx`);
     });
   };
 
