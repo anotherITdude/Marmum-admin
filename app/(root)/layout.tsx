@@ -7,7 +7,34 @@ import CardShow from "@/components/cardShow";
 import DataTable from "@/components/table";
 
 const Dashboard = async () => {
-  const entries = await prismadb.iphone.findMany({
+  // Fetch total entries count
+  const totalEntriesCount = await prismadb.backtoschoolMDF.count();
+
+  // Fetch latest 20 entries
+  const latestEntries = await prismadb.backtoschoolMDF.findMany({
+    orderBy: [
+      {
+        createdAt: "desc",
+      },
+    ],
+    take: 30, // Limit to the latest 20 entries
+  });
+
+  // Format the latest 20 entries
+  const formattedLatestEntries: EntryColumn[] = latestEntries.map((item) => ({
+    id: item.id,
+    name: item.name,
+    email: item.email,
+    mobile: item.mobile,
+    emirate: item.emirate,
+    eid: item.eid,
+    reciept: item.receipt,
+    lan: item.lan,
+    createdAt: format(item.createdAt, "MMMM dd yyyy"),
+  }));
+
+  // Format the total entries (for the cards)
+  const totalEntries = await prismadb.backtoschoolMDF.findMany({
     orderBy: [
       {
         createdAt: "desc",
@@ -15,7 +42,7 @@ const Dashboard = async () => {
     ],
   });
 
-  const formattedEntries: EntryColumn[] = entries.map((item) => ({
+  const formattedTotalEntries: EntryColumn[] = totalEntries.map((item) => ({
     id: item.id,
     name: item.name,
     email: item.email,
@@ -27,14 +54,14 @@ const Dashboard = async () => {
     createdAt: format(item.createdAt, "MMMM do yyyy"),
   }));
 
-  const formattedEnglish = formattedEntries.reduce((acc, entry) => {
+  const formattedEnglish = formattedTotalEntries.reduce((acc, entry) => {
     if (entry.lan === "en") {
       acc.push(entry);
     }
     return acc;
   }, [] as EntryColumn[]);
 
-  const formattedArabic = formattedEntries.reduce((acc, entry) => {
+  const formattedArabic = formattedTotalEntries.reduce((acc, entry) => {
     if (entry.lan === "ar") {
       acc.push(entry);
     }
@@ -49,14 +76,16 @@ const Dashboard = async () => {
         <div className="right flex-1 h-[100vh] p-4">
           {/* card */}
           <div className="flex justify-start">
-            <CardShow title="Total Entries" entries={formattedEntries} />
+            <CardShow title="Total Entries" entries={formattedTotalEntries} />
             <CardShow title="En Entries" entries={formattedEnglish} />
             <CardShow title="Ar Entries" entries={formattedArabic} />
           </div>
           {/* card */}
           {/* data table */}
           <div className="mt-4">
-            <DataTable data={formattedEntries} />
+          <div className="text-center text-bold mt-14 mb-4">Showing Latest 30 entries</div>
+
+            <DataTable data={formattedLatestEntries} />
           </div>
           {/* data table */}
         </div>

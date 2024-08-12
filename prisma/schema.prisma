@@ -10,8 +10,8 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Iphone {
-  id      String @id @default(uuid())
+model BacktoschoolMDF {
+  id    String @id @default(uuid())
   ////
   name    String
   mobile  String

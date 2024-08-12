@@ -2,7 +2,8 @@
 const nextConfig = {
     images: {
         domains: [
-            'aafiphone2023.s3.me-south-1.amazonaws.com',
+            'campaignaugust2024.s3.us-east-1.amazonaws.com',
+            'campaignaugust2024.s3.us-east-1.amazonaws.com',
         ]
     },
     output: 'standalone',

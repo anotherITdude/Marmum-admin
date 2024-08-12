@@ -54,6 +54,14 @@ export const columns: ColumnDef<EntryColumn>[] = [
     header: "Language",
   },
   {
+    accessorKey: "createdAt",
+    header: "Entry Date",
+    cell: ({ getValue }) => {
+      const date = getValue() as string;
+      return <span>{date}</span>;
+    },
+  },
+  {
     accessorKey: "reciept",
     header: "Reciept",
     cell: ({ row }) => {
