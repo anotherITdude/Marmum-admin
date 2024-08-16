@@ -1,11 +1,17 @@
-'use client'
+"use client";
 import React from "react";
 import { columns, EntryColumn } from "./columns";
 import { DataTable } from "./ui/datatable";
 import { Button } from "@/components/ui/button";
-import saveAs  from "file-saver";
+import saveAs from "file-saver";
 import ExcelJS from "exceljs";
-import { getCoreRowModel, getPaginationRowModel, getSortedRowModel, SortingState, useReactTable } from "@tanstack/react-table";
+import {
+  getCoreRowModel,
+  getPaginationRowModel,
+  getSortedRowModel,
+  SortingState,
+  useReactTable,
+} from "@tanstack/react-table";
 
 interface TableProps {
   data: EntryColumn[];
@@ -39,17 +45,17 @@ const Table: React.FC<TableProps> = ({ data, allData }) => {
       item.eid,
       item.createdAt,
       item.lan,
-      item.reciept
-    
+      item.reciept,
     ]);
-    const headerRow = ["Name",
+    const headerRow = [
+      "Name",
       "Mobile",
       "Email",
       "Emirate",
       "EId",
       "Entry Date",
       "Language",
-      "Image"
+      "Image",
     ];
 
     // Add the header row to the worksheet
@@ -69,7 +75,7 @@ const Table: React.FC<TableProps> = ({ data, allData }) => {
     <div>
       <div className="flex justify-end  mb-4">
         <Button variant="default" size="sm" onClick={exportToExcel}>
-          Export to Excel
+          {`Export to Excel (${allData?.length || 0} entries)`}
         </Button>
       </div>
       <DataTable columns={columns} data={data} />
