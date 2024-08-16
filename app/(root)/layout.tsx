@@ -85,7 +85,7 @@ const Dashboard = async () => {
           <div className="mt-4">
           <div className="text-center text-bold mt-14 mb-4">Showing Latest 30 entries</div>
 
-            <DataTable data={formattedLatestEntries} />
+            <DataTable allData={formattedTotalEntries} data={formattedLatestEntries} />
           </div>
           {/* data table */}
         </div>

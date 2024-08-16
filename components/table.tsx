@@ -9,9 +9,10 @@ import { getCoreRowModel, getPaginationRowModel, getSortedRowModel, SortingState
 
 interface TableProps {
   data: EntryColumn[];
+  allData: EntryColumn[];
 }
 
-const Table: React.FC<TableProps> = ({ data }) => {
+const Table: React.FC<TableProps> = ({ data, allData }) => {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const table = useReactTable({
     data,
@@ -30,7 +31,7 @@ const Table: React.FC<TableProps> = ({ data }) => {
     const worksheet = workbook.addWorksheet("BTS");
 
     // Define your data and header row
-    const excelData = data.map((item) => [
+    const excelData = allData.map((item) => [
       item.name,
       item.mobile,
       item.email,
@@ -72,8 +73,8 @@ const Table: React.FC<TableProps> = ({ data }) => {
         </Button>
       </div>
       <DataTable columns={columns} data={data} />
-      <div className="flex items-center justify-end space-x-2 py-4">
-        {/* Add the Export to Excel button */}
+      {/* <div className="flex items-center justify-end space-x-2 py-4">
+       
 
         <Button
           variant="outline"
@@ -91,7 +92,7 @@ const Table: React.FC<TableProps> = ({ data }) => {
         >
           Next
         </Button>
-      </div>
+      </div> */}
     </div>
   );
 };
