@@ -19,19 +19,17 @@ interface EntryChartProps {
 }
 
 const EntryChart: React.FC<EntryChartProps> = ({ entries }) => {
-  // Process data starting from August 14th for at least 1 month
+  // Process data from August 10 to September 30, 2025
   const chartData = React.useMemo(() => {
     const chartDays = [];
-    const startDate = new Date(2024, 7, 14); // August 14, 2024 (month is 0-indexed)
-    const today = new Date();
+    const startDate = new Date(2025, 7, 10); // August 10, 2025 (month is 0-indexed)
+    const endDate = new Date(2025, 8, 30); // September 30, 2025
 
-    // Calculate days from August 14th to today, minimum 30 days
-    const daysDiff = Math.max(
-      30,
+    // Calculate days from August 10 to September 30, 2025
+    const daysDiff =
       Math.ceil(
-        (today.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24),
-      ) + 1,
-    );
+        (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24),
+      ) + 1;
 
     for (let i = 0; i < daysDiff; i++) {
       const date = new Date(startDate);
@@ -113,7 +111,7 @@ const EntryChart: React.FC<EntryChartProps> = ({ entries }) => {
         <div>
           <h3 className="text-xl font-bold text-gray-900 mb-1">Entry Trends</h3>
           <p className="text-sm text-gray-600">
-            Daily entries from August 14th onwards
+            Daily entries from August 10 to September 30, 2025
           </p>
         </div>
         <div className="flex items-center space-x-4">
@@ -157,7 +155,7 @@ const EntryChart: React.FC<EntryChartProps> = ({ entries }) => {
             <CartesianGrid strokeDasharray="3 3" stroke="#F3F4F6" />
             {/* @ts-ignore */}
             <XAxis
-              dataKey="day"
+              dataKey="displayDate"
               stroke="#6B7280"
               fontSize={12}
               tickLine={false}
@@ -205,7 +203,7 @@ const EntryChart: React.FC<EntryChartProps> = ({ entries }) => {
           <p className="text-2xl font-bold text-blue-600">
             {chartData.reduce((sum, day) => sum + day.total, 0)}
           </p>
-          <p className="text-sm text-gray-600">Total since Aug 14</p>
+          <p className="text-sm text-gray-600">Total (Aug 10 - Sep 30)</p>
         </div>
         <div className="text-center">
           <p className="text-2xl font-bold text-emerald-600">
