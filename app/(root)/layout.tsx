@@ -8,12 +8,20 @@ import CardShow from "@/components/cardShow";
 import DataTable from "@/components/table";
 import { CampaignEntry } from "@/lib/database.types";
 
+// Force this page to always fetch fresh data
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 const Dashboard = async () => {
   // Fetch all entries from Supabase
   const supabaseAdmin = getSupabaseAdmin();
-  const { data: allEntries, error: allEntriesError } = await supabaseAdmin
+  const {
+    data: allEntries,
+    error: allEntriesError,
+    count,
+  } = await supabaseAdmin
     .from("campaign_entries")
-    .select("*")
+    .select("*", { count: "exact", head: false })
     .order("created_at", { ascending: false });
 
   if (allEntriesError) {
@@ -27,34 +35,46 @@ const Dashboard = async () => {
   const latestEntries = totalEntries.slice(0, 30);
 
   // Format the latest 30 entries
-  const formattedLatestEntries: EntryColumn[] = latestEntries.map(
-    (item: CampaignEntry) => ({
-      id: item.id,
-      name: item.name,
-      email: item.email,
-      mobile: item.mobile,
-      emirate: item.emirate,
-      eid: item.eid,
-      receipt: item.receipt,
-      lan: item.lan,
-      createdAt: format(new Date(item.created_at), "MMMM dd yyyy"),
-    }),
-  );
+  const formattedLatestEntries: EntryColumn[] = latestEntries
+    .map((item: CampaignEntry) => {
+      try {
+        return {
+          id: item.id,
+          name: item.name,
+          email: item.email,
+          mobile: item.mobile,
+          emirate: item.emirate,
+          eid: item.eid,
+          receipt: item.receipt,
+          lan: item.lan,
+          createdAt: format(new Date(item.created_at), "MMMM dd yyyy"),
+        };
+      } catch (error) {
+        return null;
+      }
+    })
+    .filter(Boolean) as EntryColumn[];
 
   // Format all entries (for the cards)
-  const formattedTotalEntries: EntryColumn[] = totalEntries.map(
-    (item: CampaignEntry) => ({
-      id: item.id,
-      name: item.name,
-      email: item.email,
-      mobile: item.mobile,
-      emirate: item.emirate,
-      eid: item.eid,
-      receipt: item.receipt,
-      lan: item.lan,
-      createdAt: format(new Date(item.created_at), "MMMM do yyyy"),
-    }),
-  );
+  const formattedTotalEntries: EntryColumn[] = totalEntries
+    .map((item: CampaignEntry) => {
+      try {
+        return {
+          id: item.id,
+          name: item.name,
+          email: item.email,
+          mobile: item.mobile,
+          emirate: item.emirate,
+          eid: item.eid,
+          receipt: item.receipt,
+          lan: item.lan,
+          createdAt: format(new Date(item.created_at), "MMMM do yyyy"),
+        };
+      } catch (error) {
+        return null;
+      }
+    })
+    .filter(Boolean) as EntryColumn[];
 
   const formattedEnglish = formattedTotalEntries.reduce((acc, entry) => {
     if (entry.lan === "en") {

@@ -9,9 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.48.0",
-    "@supabase/ssr": "^0.6.1",
+    "@heroicons/react": "^2.2.0",
     "@radix-ui/react-slot": "^1.0.2",
+    "@supabase/ssr": "^0.6.1",
+    "@supabase/supabase-js": "^2.48.0",
     "@tanstack/react-table": "^8.9.3",
     "@types/node": "20.3.3",
     "@types/react": "18.2.14",
