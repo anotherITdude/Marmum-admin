@@ -1,4 +1,5 @@
 import Navbar from "@/components/navbar";
+import AuthGuard from "@/components/AuthGuard";
 import { getSupabaseAdmin } from "@/lib/supabase";
 import React from "react";
 import { format } from "date-fns";
@@ -70,33 +71,35 @@ const Dashboard = async () => {
   }, [] as EntryColumn[]);
 
   return (
-    <div>
-      <Navbar />
-      <div className="flex">
-        <div className="left w-40 border-r h-[100vh] p-4">BTS Dashboard</div>
-        <div className="right flex-1 h-[100vh] p-4">
-          {/* card */}
-          <div className="flex justify-start">
-            <CardShow title="Total Entries" entries={formattedTotalEntries} />
-            <CardShow title="En Entries" entries={formattedEnglish} />
-            <CardShow title="Ar Entries" entries={formattedArabic} />
-          </div>
-          {/* card */}
-          {/* data table */}
-          <div className="mt-4">
-            <div className="text-center text-bold mt-14 mb-4">
-              Showing Latest 30 entries
+    <AuthGuard>
+      <div>
+        <Navbar />
+        <div className="flex">
+          <div className="left w-40 border-r h-[100vh] p-4">BTS Dashboard</div>
+          <div className="right flex-1 h-[100vh] p-4">
+            {/* card */}
+            <div className="flex justify-start">
+              <CardShow title="Total Entries" entries={formattedTotalEntries} />
+              <CardShow title="En Entries" entries={formattedEnglish} />
+              <CardShow title="Ar Entries" entries={formattedArabic} />
             </div>
+            {/* card */}
+            {/* data table */}
+            <div className="mt-4">
+              <div className="text-center text-bold mt-14 mb-4">
+                Showing Latest 30 entries
+              </div>
 
-            <DataTable
-              allData={formattedTotalEntries}
-              data={formattedLatestEntries}
-            />
+              <DataTable
+                allData={formattedTotalEntries}
+                data={formattedLatestEntries}
+              />
+            </div>
+            {/* data table */}
           </div>
-          {/* data table */}
         </div>
       </div>
-    </div>
+    </AuthGuard>
   );
 };
 

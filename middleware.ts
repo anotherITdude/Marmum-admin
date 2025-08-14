@@ -1,10 +1,8 @@
-import { createServerClient, type CookieOptions } from "@supabase/ssr";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 export async function middleware(req: NextRequest) {
-  // Temporarily disable all auth middleware
-  console.log(`Middleware bypassed for: ${req.nextUrl.pathname}`);
+  // Authentication is now handled client-side with AuthGuard component
   return NextResponse.next();
 }
 
