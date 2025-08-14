@@ -14,7 +14,7 @@ export type EntryColumn = {
   lan: string;
   emirate: string;
   eid: string;
-  reciept: string;
+  receipt: string;
   createdAt?: string
 };
 
@@ -62,17 +62,17 @@ export const columns: ColumnDef<EntryColumn>[] = [
     },
   },
   {
-    accessorKey: "reciept",
-    header: "Reciept",
+    accessorKey: "receipt",
+    header: "Receipt",
     cell: ({ row }) => {
       return (
         <div className="text-right font-medium">
-          <a target="_blank" href={row.getValue("reciept")}>
+          <a target="_blank" href={row.getValue("receipt")}>
             <Image
               alt={row.getValue("name")}
               width={100}
               height={100}
-              src={row.getValue("reciept")}
+              src={row.getValue("receipt")}
               className="max-h-20 w-auto m-auto"
             />
           </a>

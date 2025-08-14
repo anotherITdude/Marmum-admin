@@ -1,58 +1,59 @@
 import Navbar from "@/components/navbar";
-import prismadb from "@/lib/prismadb";
+import { getSupabaseAdmin } from "@/lib/supabase";
 import React from "react";
 import { format } from "date-fns";
 import { EntryColumn } from "@/components/columns";
 import CardShow from "@/components/cardShow";
 import DataTable from "@/components/table";
+import { CampaignEntry } from "@/lib/database.types";
 
 const Dashboard = async () => {
-  // Fetch total entries count
-  const totalEntriesCount = await prismadb.backtoschoolMDF.count();
+  // Fetch all entries from Supabase
+  const supabaseAdmin = getSupabaseAdmin();
+  const { data: allEntries, error: allEntriesError } = await supabaseAdmin
+    .from("campaign_entries")
+    .select("*")
+    .order("created_at", { ascending: false });
 
-  // Fetch latest 20 entries
-  const latestEntries = await prismadb.backtoschoolMDF.findMany({
-    orderBy: [
-      {
-        createdAt: "desc",
-      },
-    ],
-    take: 30, // Limit to the latest 20 entries
-  });
+  if (allEntriesError) {
+    console.error("Error fetching entries:", allEntriesError);
+    return <div>Error loading entries</div>;
+  }
 
-  // Format the latest 20 entries
-  const formattedLatestEntries: EntryColumn[] = latestEntries.map((item) => ({
-    id: item.id,
-    name: item.name,
-    email: item.email,
-    mobile: item.mobile,
-    emirate: item.emirate,
-    eid: item.eid,
-    reciept: item.receipt,
-    lan: item.lan,
-    createdAt: format(item.createdAt, "MMMM dd yyyy"),
-  }));
+  const totalEntries = allEntries || [];
 
-  // Format the total entries (for the cards)
-  const totalEntries = await prismadb.backtoschoolMDF.findMany({
-    orderBy: [
-      {
-        createdAt: "desc",
-      },
-    ],
-  });
+  // Get latest 30 entries
+  const latestEntries = totalEntries.slice(0, 30);
 
-  const formattedTotalEntries: EntryColumn[] = totalEntries.map((item) => ({
-    id: item.id,
-    name: item.name,
-    email: item.email,
-    mobile: item.mobile,
-    emirate: item.emirate,
-    eid: item.eid,
-    reciept: item.receipt,
-    lan: item.lan,
-    createdAt: format(item.createdAt, "MMMM do yyyy"),
-  }));
+  // Format the latest 30 entries
+  const formattedLatestEntries: EntryColumn[] = latestEntries.map(
+    (item: CampaignEntry) => ({
+      id: item.id,
+      name: item.name,
+      email: item.email,
+      mobile: item.mobile,
+      emirate: item.emirate,
+      eid: item.eid,
+      receipt: item.receipt,
+      lan: item.lan,
+      createdAt: format(new Date(item.created_at), "MMMM dd yyyy"),
+    }),
+  );
+
+  // Format all entries (for the cards)
+  const formattedTotalEntries: EntryColumn[] = totalEntries.map(
+    (item: CampaignEntry) => ({
+      id: item.id,
+      name: item.name,
+      email: item.email,
+      mobile: item.mobile,
+      emirate: item.emirate,
+      eid: item.eid,
+      receipt: item.receipt,
+      lan: item.lan,
+      createdAt: format(new Date(item.created_at), "MMMM do yyyy"),
+    }),
+  );
 
   const formattedEnglish = formattedTotalEntries.reduce((acc, entry) => {
     if (entry.lan === "en") {
@@ -83,9 +84,14 @@ const Dashboard = async () => {
           {/* card */}
           {/* data table */}
           <div className="mt-4">
-          <div className="text-center text-bold mt-14 mb-4">Showing Latest 30 entries</div>
+            <div className="text-center text-bold mt-14 mb-4">
+              Showing Latest 30 entries
+            </div>
 
-            <DataTable allData={formattedTotalEntries} data={formattedLatestEntries} />
+            <DataTable
+              allData={formattedTotalEntries}
+              data={formattedLatestEntries}
+            />
           </div>
           {/* data table */}
         </div>

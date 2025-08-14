@@ -45,7 +45,7 @@ const Table: React.FC<TableProps> = ({ data, allData }) => {
       item.eid,
       item.createdAt,
       item.lan,
-      item.reciept,
+      item.receipt,
     ]);
     const headerRow = [
       "Name",

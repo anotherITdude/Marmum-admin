@@ -1,10 +1,4 @@
-"use client";
-import { UserButton } from "@clerk/clerk-react";
-
 export default function SetupPage() {
-  return (
-    <div className="p-4">
-      <UserButton afterSignOutUrl="/" />
-    </div>
-  );
+  // This page is now handled by layout.tsx which shows the dashboard
+  return null;
 }
