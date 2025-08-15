@@ -14,60 +14,11 @@ const StatsCards: React.FC<StatsCardsProps> = ({
   englishEntries,
   arabicEntries,
 }) => {
-  // Calculate weekly percentage changes (this week vs previous week)
-  const calculateWeeklyPercentageChange = (entries: EntryColumn[]) => {
-    const now = new Date();
-    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
-    // Get start of this week (Monday)
-    const dayOfWeek = today.getDay();
-    const startOfThisWeek = new Date(today);
-    startOfThisWeek.setDate(
-      today.getDate() - (dayOfWeek === 0 ? 6 : dayOfWeek - 1),
-    );
-
-    // Get start of previous week
-    const startOfPreviousWeek = new Date(startOfThisWeek);
-    startOfPreviousWeek.setDate(startOfThisWeek.getDate() - 7);
-
-    // Get end of previous week (Sunday)
-    const endOfPreviousWeek = new Date(startOfThisWeek);
-    endOfPreviousWeek.setTime(endOfPreviousWeek.getTime() - 1);
-
-    // Count entries for this week (from Monday to now)
-    const thisWeekEntries = entries.filter((entry) => {
-      try {
-        if (!entry.createdAt) return false;
-        const entryDate = new Date(entry.createdAt);
-        return entryDate >= startOfThisWeek && entryDate <= now;
-      } catch {
-        return false;
-      }
-    }).length;
-
-    // Count entries for previous week (full week)
-    const previousWeekEntries = entries.filter((entry) => {
-      try {
-        if (!entry.createdAt) return false;
-        const entryDate = new Date(entry.createdAt);
-        return (
-          entryDate >= startOfPreviousWeek && entryDate <= endOfPreviousWeek
-        );
-      } catch {
-        return false;
-      }
-    }).length;
-
-    if (previousWeekEntries === 0) return thisWeekEntries > 0 ? "+100%" : "0%";
-
-    const percentChange =
-      ((thisWeekEntries - previousWeekEntries) / previousWeekEntries) * 100;
-    const sign = percentChange >= 0 ? "+" : "";
-    return `${sign}${Math.round(percentChange)}%`;
-  };
-
-  // Calculate today vs yesterday for today's entries card
-  const calculateTodayVsYesterday = (entries: EntryColumn[]) => {
+  // Calculate entry changes (today vs yesterday)
+  const calculateDailyEntryChange = (
+    entries: EntryColumn[],
+    entryType: string = "entries",
+  ) => {
     const now = new Date();
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
@@ -102,35 +53,38 @@ const StatsCards: React.FC<StatsCardsProps> = ({
       }
     }).length;
 
-    // Debug logging (remove in production)
-    console.log("Today:", today.toDateString(), "Count:", todayEntries);
-    console.log(
-      "Yesterday:",
-      yesterday.toDateString(),
-      "Count:",
-      yesterdayEntries,
-    );
+    const difference = todayEntries - yesterdayEntries;
+    const sign = difference > 0 ? "+" : difference < 0 ? "" : "";
 
-    if (yesterdayEntries === 0) return todayEntries > 0 ? "+100%" : "0%";
+    if (difference === 0) {
+      return `Same as yesterday`;
+    }
 
-    const percentChange =
-      ((todayEntries - yesterdayEntries) / yesterdayEntries) * 100;
-    const sign = percentChange >= 0 ? "+" : "";
-    return `${sign}${Math.round(percentChange)}%`;
+    return `${sign}${Math.abs(difference)} ${entryType} since yesterday`;
   };
 
-  const totalChange = calculateWeeklyPercentageChange(totalEntries);
-  const englishChange = calculateWeeklyPercentageChange(englishEntries);
-  const arabicChange = calculateWeeklyPercentageChange(arabicEntries);
-  const todayChange = calculateTodayVsYesterday(totalEntries);
+  const totalChange = calculateDailyEntryChange(totalEntries, "entries");
+  const englishChange = calculateDailyEntryChange(
+    englishEntries,
+    "English entries",
+  );
+  const arabicChange = calculateDailyEntryChange(
+    arabicEntries,
+    "Arabic entries",
+  );
+  const todayChange = calculateDailyEntryChange(totalEntries, "entries");
 
   const stats = [
     {
       name: "Total Entries",
       value: totalEntries.length,
       change: totalChange,
-      changeType: totalChange.startsWith("+") ? "increase" : "decrease",
-      tooltip: "This week vs previous week",
+      changeType: totalChange.startsWith("+")
+        ? "increase"
+        : totalChange.startsWith("-")
+        ? "decrease"
+        : "neutral",
+      tooltip: "Today vs yesterday",
       icon: (
         <svg
           className="w-6 h-6"
@@ -153,8 +107,12 @@ const StatsCards: React.FC<StatsCardsProps> = ({
       name: "English Entries",
       value: englishEntries.length,
       change: englishChange,
-      changeType: englishChange.startsWith("+") ? "increase" : "decrease",
-      tooltip: "This week vs previous week",
+      changeType: englishChange.startsWith("+")
+        ? "increase"
+        : englishChange.startsWith("-")
+        ? "decrease"
+        : "neutral",
+      tooltip: "Today vs yesterday",
       icon: (
         <svg
           className="w-6 h-6"
@@ -177,8 +135,12 @@ const StatsCards: React.FC<StatsCardsProps> = ({
       name: "Arabic Entries",
       value: arabicEntries.length,
       change: arabicChange,
-      changeType: arabicChange.startsWith("+") ? "increase" : "decrease",
-      tooltip: "This week vs previous week",
+      changeType: arabicChange.startsWith("+")
+        ? "increase"
+        : arabicChange.startsWith("-")
+        ? "decrease"
+        : "neutral",
+      tooltip: "Today vs yesterday",
       icon: (
         <svg
           className="w-6 h-6"
@@ -201,7 +163,11 @@ const StatsCards: React.FC<StatsCardsProps> = ({
       name: "Today's Entries",
       value: getTodayEntries(totalEntries),
       change: todayChange,
-      changeType: todayChange.startsWith("+") ? "increase" : "decrease",
+      changeType: todayChange.startsWith("+")
+        ? "increase"
+        : todayChange.startsWith("-")
+        ? "decrease"
+        : "neutral",
       tooltip: "Today vs yesterday",
       icon: (
         <svg
@@ -236,30 +202,35 @@ const StatsCards: React.FC<StatsCardsProps> = ({
 
           {/* Content */}
           <div className="relative">
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-start justify-between mb-4">
               <div
-                className={`p-3 rounded-xl bg-gradient-to-r ${stat.gradient} text-white shadow-lg`}
+                className={`p-3 rounded-xl bg-gradient-to-r ${stat.gradient} text-white shadow-lg flex-shrink-0`}
               >
                 {stat.icon}
               </div>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <p className="text-sm font-medium text-gray-600 mb-1">
+                  {stat.name}
+                </p>
+                <p className="text-3xl font-bold text-gray-900">
+                  {stat.value.toLocaleString()}
+                </p>
+              </div>
+
               <div
-                className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                className={`text-xs font-medium px-3 py-2 rounded-lg inline-block ${
                   stat.changeType === "increase"
-                    ? "bg-green-100 text-green-800"
-                    : "bg-red-100 text-red-800"
+                    ? "bg-green-100 text-green-800 border border-green-200"
+                    : stat.changeType === "decrease"
+                    ? "bg-red-100 text-red-800 border border-red-200"
+                    : "bg-gray-100 text-gray-700 border border-gray-200"
                 }`}
               >
                 {stat.change}
               </div>
-            </div>
-
-            <div>
-              <p className="text-sm font-medium text-gray-600 mb-1">
-                {stat.name}
-              </p>
-              <p className="text-3xl font-bold text-gray-900">
-                {stat.value.toLocaleString()}
-              </p>
             </div>
           </div>
 
