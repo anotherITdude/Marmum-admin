@@ -91,10 +91,10 @@ const DashboardActions: React.FC<DashboardActionsProps> = ({ entries }) => {
   };
 
   return (
-    <div className="flex items-center space-x-3">
+    <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
       <button
         onClick={exportToExcel}
-        className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center space-x-2"
+        className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-medium transition-all duration-200 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center space-x-2"
       >
         <svg
           className="w-4 h-4"
@@ -109,13 +109,16 @@ const DashboardActions: React.FC<DashboardActionsProps> = ({ entries }) => {
             d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
           />
         </svg>
-        <span>Export Data ({entries.length} entries)</span>
+        <span className="hidden sm:inline">
+          Export Data ({entries.length} entries)
+        </span>
+        <span className="sm:hidden">Export ({entries.length})</span>
       </button>
 
       <button
         onClick={handleRefresh}
         disabled={isRefreshing}
-        className="bg-white border border-gray-300 hover:border-gray-400 text-gray-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="bg-white border border-gray-300 hover:border-gray-400 text-gray-700 px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-medium transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <svg
           className={`w-4 h-4 ${isRefreshing ? "animate-spin" : ""}`}

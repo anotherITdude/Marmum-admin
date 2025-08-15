@@ -73,7 +73,7 @@ const Table: React.FC<TableProps> = ({ data, allData }) => {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center space-y-3 sm:space-y-0">
         <div className="flex items-center space-x-2">
           <div className="flex items-center space-x-2 text-sm text-gray-600">
             <svg
@@ -97,7 +97,7 @@ const Table: React.FC<TableProps> = ({ data, allData }) => {
           variant="default"
           size="sm"
           onClick={exportToExcel}
-          className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105"
+          className="bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white shadow-md hover:shadow-lg transition-all duration-200 transform hover:scale-105 w-full sm:w-auto"
         >
           <svg
             className="w-4 h-4 mr-2"
@@ -112,7 +112,10 @@ const Table: React.FC<TableProps> = ({ data, allData }) => {
               d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
             />
           </svg>
-          Export to Excel ({allData?.length || 0} entries)
+          <span className="hidden sm:inline">
+            Export to Excel ({allData?.length || 0} entries)
+          </span>
+          <span className="sm:hidden">Export ({allData?.length || 0})</span>
         </Button>
       </div>
 

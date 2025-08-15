@@ -89,22 +89,24 @@ export default async function DashboardPage() {
   );
 
   return (
-    <div className="p-6 space-y-6">
+    <div className="p-4 md:p-6 space-y-6">
       {/* Welcome Header */}
       <div className="mb-8">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
               Dashboard Overview
             </h1>
-            <p className="text-gray-600">
+            <p className="text-gray-600 text-sm md:text-base">
               Welcome back! Here&apos;s what&apos;s happening with your campaign
               today.
             </p>
           </div>
 
           {/* Quick Actions */}
-          <DashboardActions entries={formattedTotalEntries} />
+          <div className="flex-shrink-0">
+            <DashboardActions entries={formattedTotalEntries} />
+          </div>
         </div>
       </div>
 
@@ -119,10 +121,10 @@ export default async function DashboardPage() {
       <EntryChart entries={formattedTotalEntries} />
 
       {/* Latest Entries Table */}
-      <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6">
-        <div className="flex items-center justify-between mb-6">
+      <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-4 md:p-6">
+        <div className="flex flex-col space-y-4 md:flex-row md:items-center md:justify-between md:space-y-0 mb-6">
           <div>
-            <h3 className="text-xl font-bold text-gray-900 mb-1">
+            <h3 className="text-lg md:text-xl font-bold text-gray-900 mb-1">
               Latest Entries
             </h3>
             <p className="text-sm text-gray-600">
@@ -133,7 +135,7 @@ export default async function DashboardPage() {
           {/* View All Link */}
           <a
             href="/entries"
-            className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center space-x-2"
+            className="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-medium transition-all duration-200 transform hover:scale-105 shadow-md hover:shadow-lg flex items-center justify-center space-x-2 w-full md:w-auto"
           >
             <span>View All Entries</span>
             <svg
@@ -152,10 +154,12 @@ export default async function DashboardPage() {
           </a>
         </div>
 
-        <DataTable
-          allData={formattedTotalEntries}
-          data={formattedLatestEntries}
-        />
+        <div className="overflow-hidden">
+          <DataTable
+            allData={formattedTotalEntries}
+            data={formattedLatestEntries}
+          />
+        </div>
       </div>
     </div>
   );

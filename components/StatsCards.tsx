@@ -190,54 +190,110 @@ const StatsCards: React.FC<StatsCardsProps> = ({
   ];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-      {stats.map((stat, index) => (
-        <div
-          key={stat.name}
-          className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${stat.bgGradient} p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-white/50`}
-          title={stat.tooltip}
-        >
-          {/* Background Pattern */}
-          <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
+    <div className="mb-8">
+      {/* Mobile: Horizontal scroll */}
+      <div className="md:hidden">
+        <div className="flex space-x-4 overflow-x-auto pb-4 px-1">
+          {stats.map((stat, index) => (
+            <div
+              key={stat.name}
+              className={`flex-shrink-0 w-72 relative overflow-hidden rounded-2xl bg-gradient-to-br ${stat.bgGradient} p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-white/50`}
+              title={stat.tooltip}
+            >
+              {/* Background Pattern */}
+              <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
 
-          {/* Content */}
-          <div className="relative">
-            <div className="flex items-start justify-between mb-4">
-              <div
-                className={`p-3 rounded-xl bg-gradient-to-r ${stat.gradient} text-white shadow-lg flex-shrink-0`}
-              >
-                {stat.icon}
+              {/* Content */}
+              <div className="relative">
+                <div className="flex items-start justify-between mb-4">
+                  <div
+                    className={`p-3 rounded-xl bg-gradient-to-r ${stat.gradient} text-white shadow-lg flex-shrink-0`}
+                  >
+                    {stat.icon}
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  <div>
+                    <p className="text-sm font-medium text-gray-600 mb-1">
+                      {stat.name}
+                    </p>
+                    <p className="text-3xl font-bold text-gray-900">
+                      {stat.value.toLocaleString()}
+                    </p>
+                  </div>
+
+                  <div
+                    className={`text-xs font-medium px-3 py-2 rounded-lg inline-block ${
+                      stat.changeType === "increase"
+                        ? "bg-green-100 text-green-800 border border-green-200"
+                        : stat.changeType === "decrease"
+                        ? "bg-red-100 text-red-800 border border-red-200"
+                        : "bg-gray-100 text-gray-700 border border-gray-200"
+                    }`}
+                  >
+                    {stat.change}
+                  </div>
+                </div>
               </div>
+
+              {/* Animated counter */}
+              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse"></div>
             </div>
-
-            <div className="space-y-3">
-              <div>
-                <p className="text-sm font-medium text-gray-600 mb-1">
-                  {stat.name}
-                </p>
-                <p className="text-3xl font-bold text-gray-900">
-                  {stat.value.toLocaleString()}
-                </p>
-              </div>
-
-              <div
-                className={`text-xs font-medium px-3 py-2 rounded-lg inline-block ${
-                  stat.changeType === "increase"
-                    ? "bg-green-100 text-green-800 border border-green-200"
-                    : stat.changeType === "decrease"
-                    ? "bg-red-100 text-red-800 border border-red-200"
-                    : "bg-gray-100 text-gray-700 border border-gray-200"
-                }`}
-              >
-                {stat.change}
-              </div>
-            </div>
-          </div>
-
-          {/* Animated counter */}
-          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse"></div>
+          ))}
         </div>
-      ))}
+      </div>
+
+      {/* Desktop: Grid layout */}
+      <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {stats.map((stat, index) => (
+          <div
+            key={stat.name}
+            className={`relative overflow-hidden rounded-2xl bg-gradient-to-br ${stat.bgGradient} p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-white/50`}
+            title={stat.tooltip}
+          >
+            {/* Background Pattern */}
+            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent"></div>
+
+            {/* Content */}
+            <div className="relative">
+              <div className="flex items-start justify-between mb-4">
+                <div
+                  className={`p-3 rounded-xl bg-gradient-to-r ${stat.gradient} text-white shadow-lg flex-shrink-0`}
+                >
+                  {stat.icon}
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                <div>
+                  <p className="text-sm font-medium text-gray-600 mb-1">
+                    {stat.name}
+                  </p>
+                  <p className="text-3xl font-bold text-gray-900">
+                    {stat.value.toLocaleString()}
+                  </p>
+                </div>
+
+                <div
+                  className={`text-xs font-medium px-3 py-2 rounded-lg inline-block ${
+                    stat.changeType === "increase"
+                      ? "bg-green-100 text-green-800 border border-green-200"
+                      : stat.changeType === "decrease"
+                      ? "bg-red-100 text-red-800 border border-red-200"
+                      : "bg-gray-100 text-gray-700 border border-gray-200"
+                  }`}
+                >
+                  {stat.change}
+                </div>
+              </div>
+            </div>
+
+            {/* Animated counter */}
+            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse"></div>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
