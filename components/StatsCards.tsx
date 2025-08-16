@@ -72,7 +72,51 @@ const StatsCards: React.FC<StatsCardsProps> = ({
     arabicEntries,
     "Arabic entries",
   );
-  const todayChange = calculateDailyEntryChange(totalEntries, "entries");
+
+  // For Today's Entries card, compare today's count vs yesterday's count
+  const calculateTodayVsYesterdayChange = () => {
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
+
+    const todayCount = getTodayEntries(totalEntries);
+    const yesterdayCount = totalEntries.filter((entry) => {
+      try {
+        if (!entry.createdAt) return false;
+        const entryDate = new Date(entry.createdAt);
+        const entryDateOnly = new Date(
+          entryDate.getFullYear(),
+          entryDate.getMonth(),
+          entryDate.getDate(),
+        );
+        return entryDateOnly.getTime() === yesterday.getTime();
+      } catch {
+        return false;
+      }
+    }).length;
+
+    // Debug info (remove in production)
+    console.log(
+      "Today's count:",
+      todayCount,
+      "Yesterday's count:",
+      yesterdayCount,
+    );
+
+    const difference = todayCount - yesterdayCount;
+
+    if (difference === 0) {
+      return `Same as yesterday (${yesterdayCount})`;
+    }
+
+    if (difference > 0) {
+      return `+${difference} more than yesterday (${yesterdayCount})`;
+    } else {
+      return `${Math.abs(difference)} less than yesterday (${yesterdayCount})`;
+    }
+  };
+
+  const todayChange = calculateTodayVsYesterdayChange();
 
   const stats = [
     {
