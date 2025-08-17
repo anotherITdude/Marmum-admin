@@ -11,13 +11,46 @@ import DashboardActions from "@/components/DashboardActions";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-export default async function DashboardPage() {
-  // Fetch all entries from Supabase
+// Helper function to fetch all entries using pagination
+async function fetchAllEntries() {
   const supabaseAdmin = getSupabaseAdmin();
-  const { data: allEntries, error: allEntriesError } = await supabaseAdmin
-    .from("campaign_entries")
-    .select("*")
-    .order("created_at", { ascending: false });
+  let allEntries: any[] = [];
+  let from = 0;
+  const batchSize = 1000;
+  let hasMore = true;
+
+  while (hasMore) {
+    const { data, error } = await supabaseAdmin
+      .from("campaign_entries")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .range(from, from + batchSize - 1);
+
+    if (error) {
+      console.error("Error fetching entries:", error);
+      return { data: null, error };
+    }
+
+    if (data && data.length > 0) {
+      allEntries = allEntries.concat(data);
+      from += batchSize;
+
+      // If we got less than batchSize, we've reached the end
+      if (data.length < batchSize) {
+        hasMore = false;
+      }
+    } else {
+      hasMore = false;
+    }
+  }
+
+  console.log(`Successfully fetched ${allEntries.length} total entries`);
+  return { data: allEntries, error: null };
+}
+
+export default async function DashboardPage() {
+  // Fetch all entries from Supabase using pagination
+  const { data: allEntries, error: allEntriesError } = await fetchAllEntries();
 
   if (allEntriesError) {
     console.error("Error fetching entries:", allEntriesError);
