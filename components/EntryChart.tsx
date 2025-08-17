@@ -223,10 +223,23 @@ const EntryChart: React.FC<EntryChartProps> = ({ entries }) => {
           <p className="text-sm text-gray-600">Avg per day</p>
         </div>
         <div className="text-center">
-          <p className="text-2xl font-bold text-purple-600">
-            {Math.max(...chartData.map((day) => day.total))}
-          </p>
-          <p className="text-sm text-gray-600">Peak day</p>
+          {(() => {
+            const peakDay = chartData.reduce(
+              (max, day) => (day.total > max.total ? day : max),
+              chartData[0] || { total: 0, displayDate: "" },
+            );
+            return (
+              <>
+                <p className="text-2xl font-bold text-purple-600">
+                  {peakDay.total}
+                </p>
+                <p className="text-sm text-gray-600">
+                  Peak day
+                  {peakDay.displayDate ? ` (${peakDay.displayDate})` : ""}
+                </p>
+              </>
+            );
+          })()}
         </div>
       </div>
     </div>
