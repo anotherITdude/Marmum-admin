@@ -14,8 +14,8 @@ const StatsCards: React.FC<StatsCardsProps> = ({
   englishEntries,
   arabicEntries,
 }) => {
-  // Calculate entry changes (today vs yesterday)
-  const calculateDailyEntryChange = (
+  // Calculate daily submission comparisons (today vs yesterday)
+  const calculateDailySubmissionChange = (
     entries: EntryColumn[],
     entryType: string = "entries",
   ) => {
@@ -23,7 +23,7 @@ const StatsCards: React.FC<StatsCardsProps> = ({
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
 
-    const todayEntries = entries.filter((entry) => {
+    const todayCount = entries.filter((entry) => {
       try {
         if (!entry.createdAt) return false;
         const entryDate = new Date(entry.createdAt);
@@ -38,7 +38,7 @@ const StatsCards: React.FC<StatsCardsProps> = ({
       }
     }).length;
 
-    const yesterdayEntries = entries.filter((entry) => {
+    const yesterdayCount = entries.filter((entry) => {
       try {
         if (!entry.createdAt) return false;
         const entryDate = new Date(entry.createdAt);
@@ -53,25 +53,15 @@ const StatsCards: React.FC<StatsCardsProps> = ({
       }
     }).length;
 
-    const difference = todayEntries - yesterdayEntries;
-    const sign = difference > 0 ? "+" : difference < 0 ? "" : "";
-
-    if (difference === 0) {
-      return `Same as yesterday`;
-    }
-
-    return `${sign}${Math.abs(difference)} ${entryType} since yesterday`;
+    return `${todayCount} today vs ${yesterdayCount} yesterday`;
   };
 
-  const totalChange = calculateDailyEntryChange(totalEntries, "entries");
-  const englishChange = calculateDailyEntryChange(
+  const totalChange = calculateDailySubmissionChange(totalEntries, "total");
+  const englishChange = calculateDailySubmissionChange(
     englishEntries,
-    "English entries",
+    "English",
   );
-  const arabicChange = calculateDailyEntryChange(
-    arabicEntries,
-    "Arabic entries",
-  );
+  const arabicChange = calculateDailySubmissionChange(arabicEntries, "Arabic");
 
   // For Today's Entries card, compare today's count vs yesterday's count
   const calculateTodayVsYesterdayChange = () => {
@@ -123,12 +113,8 @@ const StatsCards: React.FC<StatsCardsProps> = ({
       name: "Total Entries",
       value: totalEntries.length,
       change: totalChange,
-      changeType: totalChange.startsWith("+")
-        ? "increase"
-        : totalChange.startsWith("-")
-        ? "decrease"
-        : "neutral",
-      tooltip: "Today vs yesterday",
+      changeType: "neutral", // Always neutral since we're showing comparison, not change
+      tooltip: "Daily submissions today vs yesterday",
       icon: (
         <svg
           className="w-6 h-6"
@@ -151,12 +137,8 @@ const StatsCards: React.FC<StatsCardsProps> = ({
       name: "English Entries",
       value: englishEntries.length,
       change: englishChange,
-      changeType: englishChange.startsWith("+")
-        ? "increase"
-        : englishChange.startsWith("-")
-        ? "decrease"
-        : "neutral",
-      tooltip: "Today vs yesterday",
+      changeType: "neutral", // Always neutral since we're showing comparison, not change
+      tooltip: "Daily submissions today vs yesterday",
       icon: (
         <svg
           className="w-6 h-6"
@@ -179,12 +161,8 @@ const StatsCards: React.FC<StatsCardsProps> = ({
       name: "Arabic Entries",
       value: arabicEntries.length,
       change: arabicChange,
-      changeType: arabicChange.startsWith("+")
-        ? "increase"
-        : arabicChange.startsWith("-")
-        ? "decrease"
-        : "neutral",
-      tooltip: "Today vs yesterday",
+      changeType: "neutral", // Always neutral since we're showing comparison, not change
+      tooltip: "Daily submissions today vs yesterday",
       icon: (
         <svg
           className="w-6 h-6"
