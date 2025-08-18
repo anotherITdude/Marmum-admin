@@ -11,6 +11,7 @@ import {
   ResponsiveContainer,
   AreaChart,
   Area,
+  LabelList,
 } from "recharts";
 import { EntryColumn } from "./columns";
 
@@ -105,6 +106,57 @@ const EntryChart: React.FC<EntryChartProps> = ({ entries }) => {
     return null;
   };
 
+  // Custom label component for significant values
+  const CustomLabel = (props: any) => {
+    const { x, y, value, index } = props;
+    const data = chartData[index];
+
+    // Only show labels for values above a certain threshold or peak values
+    const threshold = Math.max(...chartData.map((d) => d.total)) * 0.7; // 70% of peak
+    if (value < threshold) return null;
+
+    return (
+      <text
+        x={x}
+        y={y - 10}
+        fill="#3B82F6"
+        textAnchor="middle"
+        fontSize="12"
+        fontWeight="600"
+        className="drop-shadow-sm"
+      >
+        {value}
+      </text>
+    );
+  };
+
+  // Custom dot component that only shows for dates with data and not in future
+  const CustomDot = (props: any) => {
+    const { cx, cy, payload, dataKey } = props;
+    const entryDate = new Date(payload.date);
+    const today = new Date();
+    today.setHours(23, 59, 59, 999); // End of today
+
+    // Get the value for the specific data key (total, english, arabic)
+    const value = payload[dataKey] || 0;
+
+    // Don't show dot if no data or future date
+    if (value === 0 || entryDate > today) {
+      return null;
+    }
+
+    return (
+      <circle
+        cx={cx}
+        cy={cy}
+        r={2}
+        fill={props.fill}
+        stroke={props.stroke}
+        strokeWidth={1}
+      />
+    );
+  };
+
   return (
     <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-6 mb-8">
       <div className="flex items-center justify-between mb-6">
@@ -178,6 +230,13 @@ const EntryChart: React.FC<EntryChartProps> = ({ entries }) => {
               stroke="#3B82F6"
               strokeWidth={3}
               fill="url(#totalGradient)"
+              dot={false}
+              activeDot={{
+                r: 4,
+                stroke: "#3B82F6",
+                strokeWidth: 2,
+                fill: "#ffffff",
+              }}
             />
             <Area
               type="monotone"
@@ -185,6 +244,13 @@ const EntryChart: React.FC<EntryChartProps> = ({ entries }) => {
               stroke="#10B981"
               strokeWidth={2}
               fill="url(#englishGradient)"
+              dot={<CustomDot fill="#10B981" stroke="#10B981" />}
+              activeDot={{
+                r: 3,
+                stroke: "#10B981",
+                strokeWidth: 2,
+                fill: "#ffffff",
+              }}
             />
             <Area
               type="monotone"
@@ -192,6 +258,13 @@ const EntryChart: React.FC<EntryChartProps> = ({ entries }) => {
               stroke="#8B5CF6"
               strokeWidth={2}
               fill="url(#arabicGradient)"
+              dot={<CustomDot fill="#8B5CF6" stroke="#8B5CF6" />}
+              activeDot={{
+                r: 3,
+                stroke: "#8B5CF6",
+                strokeWidth: 2,
+                fill: "#ffffff",
+              }}
             />
           </AreaChart>
         </ResponsiveContainer>
