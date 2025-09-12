@@ -1,73 +1,17 @@
-import { getSupabaseAdmin } from "@/lib/supabase";
+"use client";
+
 import { format } from "date-fns";
 import { EntryColumn } from "@/components/columns";
 import DataTable from "@/components/table";
 import { CampaignEntry } from "@/lib/database.types";
+import { useEntriesData } from "@/hooks/useEntriesData";
+import { EntriesPageSkeleton } from "@/components/SkeletonLoader";
 
-// Force this page to always fetch fresh data
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
-
-// Helper function to fetch all entries using pagination
-async function fetchAllEntries() {
-  const supabaseAdmin = getSupabaseAdmin();
-  let allEntries: any[] = [];
-  let from = 0;
-  const batchSize = 1000;
-  let hasMore = true;
-
-  while (hasMore) {
-    const { data, error } = await supabaseAdmin
-      .from("campaign_entries")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .range(from, from + batchSize - 1);
-
-    if (error) {
-      console.error("Error fetching entries:", error);
-      return { data: null, error };
-    }
-
-    if (data && data.length > 0) {
-      allEntries = allEntries.concat(data);
-      from += batchSize;
-
-      // If we got less than batchSize, we've reached the end
-      if (data.length < batchSize) {
-        hasMore = false;
-      }
-    } else {
-      hasMore = false;
-    }
-  }
-
-  console.log(`Successfully fetched ${allEntries.length} total entries`);
-  return { data: allEntries, error: null };
-}
-
-const AllEntriesPage = async () => {
-  // Fetch all entries from Supabase using pagination
-  const { data: allEntries, error: allEntriesError } = await fetchAllEntries();
-
-  if (allEntriesError) {
-    console.error("Error fetching entries:", allEntriesError);
-    return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <div className="text-red-500 text-6xl mb-4">⚠️</div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
-            Error Loading Entries
-          </h2>
-          <p className="text-gray-600">Please try refreshing the page</p>
-        </div>
-      </div>
-    );
-  }
-
-  const totalEntries = allEntries || [];
+const AllEntriesPage = () => {
+  const { allEntries, loading, error, retry } = useEntriesData();
 
   // Format all entries
-  const formattedEntries: EntryColumn[] = totalEntries
+  const formattedEntries: EntryColumn[] = allEntries
     .map((item: CampaignEntry) => {
       try {
         return {
@@ -86,6 +30,42 @@ const AllEntriesPage = async () => {
       }
     })
     .filter(Boolean) as EntryColumn[];
+
+  // Show loading skeleton
+  if (loading) {
+    return <EntriesPageSkeleton />;
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="max-w-md w-full mx-auto text-center p-6">
+          <div className="bg-white rounded-lg shadow-lg p-8">
+            <div className="text-red-500 text-6xl mb-4">⚠️</div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">
+              Error Loading Entries
+            </h2>
+            <p className="text-gray-600 mb-6">{error}</p>
+            <div className="space-y-3">
+              <button
+                onClick={retry}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200"
+              >
+                Try Again
+              </button>
+              <button
+                onClick={() => window.location.reload()}
+                className="w-full bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200"
+              >
+                Refresh Page
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="p-6">
