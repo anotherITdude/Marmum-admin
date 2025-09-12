@@ -13,39 +13,52 @@ export const revalidate = 0;
 
 // Helper function to fetch all entries using pagination
 async function fetchAllEntries() {
-  const supabaseAdmin = getSupabaseAdmin();
-  let allEntries: any[] = [];
-  let from = 0;
-  const batchSize = 1000;
-  let hasMore = true;
+  try {
+    const supabaseAdmin = getSupabaseAdmin();
+    let allEntries: any[] = [];
+    let from = 0;
+    const batchSize = 1000;
+    let hasMore = true;
 
-  while (hasMore) {
-    const { data, error } = await supabaseAdmin
-      .from("campaign_entries")
-      .select("*")
-      .order("created_at", { ascending: false })
-      .range(from, from + batchSize - 1);
+    while (hasMore) {
+      const { data, error } = await supabaseAdmin
+        .from("campaign_entries")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .range(from, from + batchSize - 1);
 
-    if (error) {
-      console.error("Error fetching entries:", error);
-      return { data: null, error };
-    }
+      if (error) {
+        console.error("Error fetching entries:", error);
+        return { data: null, error };
+      }
 
-    if (data && data.length > 0) {
-      allEntries = allEntries.concat(data);
-      from += batchSize;
+      if (data && data.length > 0) {
+        allEntries = allEntries.concat(data);
+        from += batchSize;
 
-      // If we got less than batchSize, we've reached the end
-      if (data.length < batchSize) {
+        // If we got less than batchSize, we've reached the end
+        if (data.length < batchSize) {
+          hasMore = false;
+        }
+      } else {
         hasMore = false;
       }
-    } else {
-      hasMore = false;
     }
-  }
 
-  console.log(`Successfully fetched ${allEntries.length} total entries`);
-  return { data: allEntries, error: null };
+    console.log(`Successfully fetched ${allEntries.length} total entries`);
+    return { data: allEntries, error: null };
+  } catch (error: any) {
+    console.error("Unexpected error in fetchAllEntries:", error);
+    return {
+      data: null,
+      error: {
+        message:
+          error.message === "Connection closed."
+            ? "Database connection lost. Please check your internet connection and try again."
+            : "Failed to load dashboard data. Please try refreshing the page.",
+      },
+    };
+  }
 }
 
 export default async function DashboardPage() {
@@ -55,13 +68,32 @@ export default async function DashboardPage() {
   if (allEntriesError) {
     console.error("Error fetching entries:", allEntriesError);
     return (
-      <div className="flex items-center justify-center h-64">
-        <div className="text-center">
-          <div className="text-red-500 text-6xl mb-4">⚠️</div>
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">
-            Error Loading Dashboard
-          </h2>
-          <p className="text-gray-600">Please try refreshing the page</p>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="max-w-md w-full mx-auto text-center p-6">
+          <div className="bg-white rounded-lg shadow-lg p-8">
+            <div className="text-red-500 text-6xl mb-4">⚠️</div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">
+              Error Loading Dashboard
+            </h2>
+            <p className="text-gray-600 mb-6">
+              {allEntriesError.message ||
+                "Failed to load dashboard data. Please try refreshing the page."}
+            </p>
+            <div className="space-y-3">
+              <button
+                onClick={() => window.location.reload()}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200"
+              >
+                Refresh Page
+              </button>
+              <button
+                onClick={() => window.history.back()}
+                className="w-full bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200"
+              >
+                Go Back
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     );
